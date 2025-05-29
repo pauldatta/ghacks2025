@@ -483,3 +483,81 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
 }
+
+/* Styles from new Agent AI mockup */
+body {
+    font-family: 'Inter', sans-serif; /* Override previous body font */
+    background-color: #f7fafc !important; /* Light gray background for the page, ensure override */
+    color: #1a202c; /* Default dark text for light background */
+}
+
+.status-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.status-completed {
+    background-color: #e6f7f2; /* Light green background */
+    color: #00c853; /* Green check */
+}
+
+.status-in-progress {
+    background-color: #fffbeb; /* Light yellow background */
+    color: #ffab00; /* Yellow clock */
+}
+
+.status-failed {
+    background-color: #ffeeee; /* Light red background */
+    color: #ff5252; /* Red cross */
+}
+
+.control-button { /* Base style for new tab-like controls */
+    border-bottom-width: 2px;
+    border-bottom-color: transparent;
+    /* Tailwind classes will handle text color, padding, etc. */
+}
+
+.control-button.active { /* Style for active tab-like control */
+    border-bottom-width: 2px;
+    border-bottom-color: #3b82f6; /* Blue border for active tab */
+    color: #3b82f6; /* Blue text for active tab */
+    font-weight: 600;
+}
+
+/* Ensure visualizer and previews are hidden initially as per new HTML structure */
+.visualizer { 
+    display: none !important; /* Override previous if any */
+}
+.camera-preview, .screen-preview { 
+    display: none !important; /* Override previous if any */
+}
+
+/* Collapsible chat section styles */
+.chat-section-toggle { 
+    cursor: pointer; 
+}
+.chat-content { 
+    display: none; /* Initially hidden for voice-first UX */
+}
+.chat-content.expanded { 
+    display: block; 
+}
+
+/* Override for existing chat history to fit new design (if needed, Tailwind might cover this) */
+/* .chat-history might need adjustments if its old styles conflict with Tailwind layout */
+/* For now, assuming Tailwind handles the new #chatHistory styling within .chat-content */
+
+/* Adjust .model-message code for light theme if not already done */
+.model-message code {
+    background-color: #dee2e6; /* Slightly darker than model bubble for contrast */
+    color: #000; /* Ensure code text is dark */
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}

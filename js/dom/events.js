@@ -162,3 +162,40 @@ export function setupEventListeners(agent) {
 
 // Initialize settings
 settingsManager;
+
+export function setupNewUIEventListeners() {
+    // JavaScript for tab-like behavior 
+    const controlButtons = document.querySelectorAll('.control-button'); // These are micBtn, cameraBtn, screenBtn
+    controlButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            controlButtons.forEach(btn => {
+                btn.classList.remove('active', 'text-blue-600', 'font-semibold');
+                // Also remove our custom CSS 'active' if it's different from Tailwind's
+                // For now, assuming Tailwind's 'active' class is what's primarily used or they align.
+            });
+            button.classList.add('active', 'text-blue-600', 'font-semibold');
+        });
+    });
+
+    // JavaScript for collapsible chat section
+    const chatToggle = document.querySelector('.chat-section-toggle');
+    const chatContent = document.getElementById('chatBoxContent');
+    const chatToggleIcon = document.getElementById('chatToggleIcon');
+    
+    if (chatToggle && chatContent && chatToggleIcon) {
+        // Start with chat hidden as per requirement "collapsible so its hidden"
+        chatContent.classList.remove('expanded'); // Ensure it's not expanded by default
+        chatToggleIcon.textContent = '▼'; // Set initial icon state
+
+        chatToggle.addEventListener('click', () => {
+            chatContent.classList.toggle('expanded');
+            if (chatContent.classList.contains('expanded')) {
+                chatToggleIcon.textContent = '▲';
+            } else {
+                chatToggleIcon.textContent = '▼';
+            }
+        });
+    } else {
+        console.warn('Chat toggle elements not found, collapsible chat UI might not work.');
+    }
+}

@@ -5,7 +5,7 @@ import { GoogleSearchTool } from './tools/google-search.js'; // Keep import if o
 import { ToolManager } from './tools/tool-manager.js';
 import { ChatManager } from './chat/chat-manager.js';
 import settingsManager from './settings/settings-manager.js'; // Import settingsManager
-import { setupEventListeners, showConnectButton, showDisconnectButton } from './dom/events.js';
+import { setupEventListeners, showConnectButton, showDisconnectButton, setupNewUIEventListeners } from './dom/events.js'; // Added setupNewUIEventListeners
 
 const url = getWebsocketUrl();
 const config = getConfig(); // getConfig reads from localStorage, so API key is implicitly checked by getWebsocketUrl
@@ -68,3 +68,4 @@ if (!apiKey) {
 }
 
 setupEventListeners(geminiAgent);
+setupNewUIEventListeners(); // Call to setup new UI interactions

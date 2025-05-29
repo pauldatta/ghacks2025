@@ -3,32 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Live</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Agent AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css"> <!-- Added link to external CSS -->
+    <!-- Inline <style> block removed -->
 </head>
-<body>
-    <div class="app-container">
-        <button id="disconnectBtn" class="disconnect-btn" style="display: none;">Disconnect</button> <!-- Hidden by default -->
-        <button id="connectBtn" class="connect-btn">Connect</button> <!-- Shown by default -->
-        <button id="settingsBtn" class="settings-btn">⚙️</button>
-        <button id="cameraBtn" class="camera-btn">
-            <span class="camera-icon">📷</span>
-        </button>
-        <button id="screenBtn" class="screen-btn">
-            <span class="screen-icon">🖥️</span>
-        </button>
-        <button id="micBtn" class="mic-btn">
-            <span class="mic-icon">🎤</span>
-        </button>
-        <div id="chatHistory" class="chat-history"></div>
-        <canvas id="visualizer" class="visualizer"></canvas>
-        <div id="cameraPreview" class="camera-preview"></div>
-        <div id="screenPreview" class="screen-preview"></div>
-        <div class="text-input-container">
-            <input type="text" id="messageInput" placeholder="Type your message..." class="text-input">
-            <button id="sendBtn" class="send-btn">➤</button>
+<body class="flex justify-center items-start min-h-screen p-4 md:p-8">
+    <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
+        <nav class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <svg class="w-8 h-8 text-gray-700 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-3-5v5m-3-8v8M9 3l-3 3v12l3 3h6l3-3V6l-3-3H9z"></path></svg>
+                <h1 class="text-xl font-semibold text-gray-800">Agent AI</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Existing Connect/Disconnect buttons -->
+                <button id="connectBtn" class="connect-btn px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Connect</button>
+                <button id="disconnectBtn" class="disconnect-btn px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400" style="display: none;">Disconnect</button>
+                
+                <!-- Settings Button (existing ID) -->
+                <button id="settingsBtn" class="text-gray-600 hover:text-gray-800">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+                <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">S</div> <!-- User Avatar Placeholder -->
+            </div>
+        </nav>
+
+        <div class="p-6 md:p-8 space-y-8">
+            <div>
+                <!-- Control Tabs - map to existing micBtn, cameraBtn, screenBtn -->
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button id="micBtn" class="control-button active flex items-center space-x-2 py-3 px-4 text-sm font-medium text-gray-600 hover:text-blue-600 focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                        <span>Audio</span>
+                    </button>
+                    <button id="cameraBtn" class="control-button flex items-center space-x-2 py-3 px-4 text-sm font-medium text-gray-500 hover:text-blue-600 focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <span>Webcam</span>
+                    </button>
+                    <button id="screenBtn" class="control-button flex items-center space-x-2 py-3 px-4 text-sm font-medium text-gray-500 hover:text-blue-600 focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span>Screen Share</span>
+                    </button>
+                </div>
+                <!-- Previews for camera and screen -->
+                <div id="cameraPreview" class="camera-preview my-4 w-64 h-48 bg-gray-200 rounded"></div>
+                <div id="screenPreview" class="screen-preview my-4 w-64 h-36 bg-gray-200 rounded"></div>
+            </div>
+            
+            <!-- Collapsible Chat Section -->
+            <div class="chat-section">
+                <div class="chat-section-toggle flex justify-between items-center p-3 bg-gray-100 rounded-t-lg hover:bg-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800">Conversation / Input</h3>
+                    <span id="chatToggleIcon">▲</span> <!-- Icon to indicate expand/collapse -->
+                </div>
+                <div id="chatBoxContent" class="chat-content p-6 border border-t-0 border-gray-200 rounded-b-lg">
+                    <!-- Text Input Area -->
+                    <div class="relative mb-6">
+                        <textarea id="messageInput" class="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Type your message here..."></textarea>
+                        <button id="sendBtn" class="absolute right-4 bottom-3 text-gray-500 hover:text-blue-600">
+                             <svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Output / Conversation History (replaces old chatHistory) -->
+                    <div id="chatHistory" class="bg-gray-50 p-6 rounded-lg h-96 overflow-y-auto space-y-4">
+                        <!-- Messages will be appended here by ChatManager -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section from Mockup - Modified -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Current Output</h3>
+                <div id="geminiOutputArea" class="text-sm text-gray-700 leading-relaxed mb-4 min-h-[3em] p-3 bg-white border border-gray-200 rounded-md shadow-sm">
+                    <!-- Latest Gemini response streams here -->
+                </div>
+                <div class="flex space-x-3">
+                    <button class="text-gray-500 hover:text-blue-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.993 0-1.903-.406-2.599-1.118l-.013-.012-.011-.013L7.026 17H4a2 2 0 01-2-2v-4a2 2 0 012-2h2.026l2.014-4.029A2 2 0 0110.017 5h4c.534 0 1.028.184 1.426.499l.01.008.009.007.007.005.006.004.004.003.003.002.002.001.001.001L14 6v4z"></path></svg>
+                    </button>
+                    <button class="text-gray-500 hover:text-blue-600">
+                        <svg class="w-5 h-5 transform scale-y-[-1]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.993 0-1.903-.406-2.599-1.118l-.013-.012-.011-.013L7.026 17H4a2 2 0 01-2-2v-4a2 2 0 012-2h2.026l2.014-4.029A2 2 0 0110.017 5h4c.534 0 1.028.184 1.426.499l.01.008.009.007.007.005.006.004.004.003.003.002.002.001.001.001L14 6v4z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <canvas id="visualizer" class="visualizer w-full h-20"></canvas> <!-- Visualizer, can be styled/positioned -->
         </div>
     </div>
+
+    <!-- Inline script moved to js/dom/events.js and called from js/script.js -->
     <script type="module" src="js/script.js"></script>
 </body>
 </html>
