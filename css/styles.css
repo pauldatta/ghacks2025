@@ -18,7 +18,8 @@ body {
     color: var(--text-color);
     font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     min-height: 100vh;
-    line-height: 1.5; /* Improved line height */
+    line-height: 1.5;
+        /* Improved line height */
     display: flex;
     flex-direction: column;
 }
@@ -403,8 +404,10 @@ body {
     left: 20px;
     right: 20px;
     bottom: 120px;
-    background: #282c34; /* Dark theme editor-like background */
-    border: 1px solid #3c4048; /* Subtle border */
+    background: #282c34;
+        /* Dark theme editor-like background */
+        border: 1px solid #3c4048;
+        /* Subtle border */
     border-radius: 10px;
     padding: 15px;
     overflow-y: auto;
@@ -416,41 +419,58 @@ body {
 
 .chat-message {
     padding: 10px 15px;
-    border-radius: 18px; /* Slightly more rounded */
+    border-radius: 18px;
+        /* Slightly more rounded */
     max-width: 80%;
     word-wrap: break-word;
     line-height: 1.4;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Subtle shadow */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        /* Subtle shadow */
 }
 
 .user-message {
-    background: #3182ce; /* Slightly adjusted blue */
+    background: #3182ce;
+        /* Slightly adjusted blue */
     color: white;
     align-self: flex-end;
     margin-left: 20%;
 }
 
 .model-message {
-    background: #3a475a; /* Slightly lighter for better contrast on dark bg */
-    color: #e2e8f0; /* Softer white */
+    background: #3a475a;
+        /* Slightly lighter for better contrast on dark bg */
+        color: #e2e8f0;
+        /* Softer white */
     align-self: flex-start;
     margin-right: 20%;
 }
 
+.model-message-grounded {
+    /* Style for search-grounded replies */
+    border-left: 3px solid var(--accent-color);
+    padding-left: 12px;
+    /* Adjust padding to account for border */
+}
+
 .user-audio-info-message {
-    background-color: #4a5568; /* Neutral grey */
-    color: #a0aec0; /* Lighter grey text */
-    align-self: center; /* Center align */
+    background-color: #4a5568;
+    /* Neutral grey */
+    color: #a0aec0;
+    /* Lighter grey text */
+    align-self: center;
+    /* Center align */
     font-style: italic;
     font-size: 0.85em;
     max-width: 60%;
-    padding: 6px 12px; /* Smaller padding */
-    border-radius: 12px; /* Consistent rounding */
+    padding: 6px 12px;
+    /* Smaller padding */
+    border-radius: 12px;
+    /* Consistent rounding */
     text-align: center;
-    margin-top: 5px; /* Add some space if it's between other messages */
+    margin-top: 5px;
+    /* Add some space if it's between other messages */
     margin-bottom: 5px;
 }
-
 .model-message.streaming::after {
     content: '▋';
     display: inline-block;
@@ -458,6 +478,14 @@ body {
     margin-left: 2px;
 }
 
+/* Styles for inline code produced by Markdown conversion */
+.model-message code {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }

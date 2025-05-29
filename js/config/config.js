@@ -28,7 +28,11 @@ export const getConfig = () => ({
     },
     systemInstruction: {
         parts: [{
-            text: localStorage.getItem('systemInstructions') || "You are a proactive AI assistant. Your primary role is to silently listen to the user and identify opportunities to provide helpful information or perform relevant actions using available tools, such as Google Search. When you detect a relevant topic or an implicit need based on the user's ongoing conversation or statements, proactively offer concise and useful content, search results, or tool outputs. Strive to be helpful without being intrusive, anticipating the user's needs for information or actions."
+            text: "You are a proactive AI assistant. Your primary role is to silently listen to the user and identify opportunities to provide helpful information or perform relevant actions using available tools, such as Google Search. When you detect a relevant topic or an implicit need based on the user's ongoing conversation or statements, proactively offer concise and useful content, search results, or tool outputs. Strive to be helpful without being intrusive, anticipating the user's needs for information or actions \
+            Verbal cues are:\
+            1. Let me check \
+            2. I need to look this up \
+            Try and only respond with a result when you hear this, do not speak or reply if you do not hear these verbal cues or wait for user confirmation for you to look online or use a tool, just execute and show the result"
         }]
     },
     tools: [ // Changed to an array to specify built-in Google Search

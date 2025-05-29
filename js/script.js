@@ -1,7 +1,7 @@
 import { GeminiAgent } from './main/agent.js';
 import { getConfig, getWebsocketUrl, getDeepgramApiKey, MODEL_SAMPLE_RATE } from './config/config.js';
 
-import { GoogleSearchTool } from './tools/google-search.js';
+import { GoogleSearchTool } from './tools/google-search.js'; // Keep import if other tools might be added later
 import { ToolManager } from './tools/tool-manager.js';
 import { ChatManager } from './chat/chat-manager.js';
 
@@ -12,7 +12,7 @@ const config = getConfig();
 const deepgramApiKey = getDeepgramApiKey();
 
 const toolManager = new ToolManager();
-toolManager.registerTool('googleSearch', new GoogleSearchTool());
+// toolManager.registerTool('googleSearch', new GoogleSearchTool()); // Commented out to prioritize server-side Google Search
 
 const chatManager = new ChatManager();
 
