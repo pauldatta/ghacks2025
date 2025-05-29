@@ -5,11 +5,12 @@ Imagine an ever-present, ambient AI that anticipates your needs and offers relev
 This would eliminate the need to switch between applications or windows, allowing for a smooth continuation of your current task or conversation.
 
 **Proactive Cues:** To encourage proactive assistance from Gemini Whisperer, you can use verbal cues such as:
-  - "Let me check..."
-  - "Let me see..."
-  - "What about..."
-  - "Would it help if..."
-    These phrases can help the AI anticipate when you might be looking for information. More details can be found via the help icon (<i class="fas fa-question-circle"></i>) in the app.
+
+- "Let me check..."
+- "Let me see..."
+- "What about..."
+- "Would it help if..."
+  These phrases can help the AI anticipate when you might be looking for information. More details can be found via the help icon (<i class="fas fa-question-circle"></i>) in the app.
 
 ## Key Features
 
@@ -30,6 +31,10 @@ This would eliminate the need to switch between applications or windows, allowin
 - **Collapsible Chat/Input:** The main section for text input and viewing conversation history can be collapsed/expanded by clicking its header ("Conversation / Input"). It starts collapsed to encourage voice/media-first interaction.
 - **Current Output:** A dedicated area shows the live, streaming response from Gemini. This content persists until a new response from Gemini begins.
 - **Conversation History:** Below the text input (when expanded), a log of the conversation is maintained.
+
+### Screenshot
+
+![Gemini Whisperer UI](assets/gemini-whisperer-ui.png)
 
 ## Contributing
 
