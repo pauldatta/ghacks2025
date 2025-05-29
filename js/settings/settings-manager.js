@@ -25,7 +25,7 @@ class SettingsManager {
             dialog: this.dialog,
             overlay: this.overlay,
             apiKeyInput: this.dialog.querySelector('#apiKey'),
-            deepgramApiKeyInput: this.dialog.querySelector('#deepgramApiKey'),
+            // deepgramApiKeyInput removed
             voiceSelect: this.dialog.querySelector('#voice'),
             sampleRateInput: this.dialog.querySelector('#sampleRate'),
             sampleRateValue: this.dialog.querySelector('#sampleRateValue'),
@@ -48,16 +48,7 @@ class SettingsManager {
             topPValue: this.dialog.querySelector('#topPValue'),
             topKInput: this.dialog.querySelector('#topK'),
             topKValue: this.dialog.querySelector('#topKValue'),
-            safetyToggle: this.dialog.querySelector('#safetyToggle'),
-            safetyContent: this.dialog.querySelector('#safetyToggle + .collapsible-content'),
-            harassmentInput: this.dialog.querySelector('#harassmentThreshold'),
-            harassmentValue: this.dialog.querySelector('#harassmentValue'),
-            dangerousInput: this.dialog.querySelector('#dangerousContentThreshold'),
-            dangerousValue: this.dialog.querySelector('#dangerousValue'),
-            sexualInput: this.dialog.querySelector('#sexuallyExplicitThreshold'),
-            sexualValue: this.dialog.querySelector('#sexualValue'),
-            civicInput: this.dialog.querySelector('#civicIntegrityThreshold'),
-            civicValue: this.dialog.querySelector('#civicValue'),
+            // safetyToggle and related elements removed
             saveBtn: this.dialog.querySelector('#settingsSaveBtn')
         };
     }
@@ -89,15 +80,12 @@ class SettingsManager {
             this.toggleCollapsible(this.elements.screenCameraToggle, this.elements.screenCameraContent);
         });
 
-        this.elements.safetyToggle.addEventListener('click', () => {
-            this.toggleCollapsible(this.elements.safetyToggle, this.elements.safetyContent);
-        });
+        // safetyToggle event listener removed
 
         // Add input listeners for real-time value updates
         const inputElements = [
             'sampleRateInput', 'temperatureInput', 'topPInput', 'topKInput',
-            'fpsInput', 'resizeWidthInput', 'qualityInput', 'harassmentInput',
-            'dangerousInput', 'sexualInput', 'civicInput'
+            'fpsInput', 'resizeWidthInput', 'qualityInput' // safety inputs removed
         ];
 
         inputElements.forEach(elementName => {
@@ -108,7 +96,7 @@ class SettingsManager {
     loadSettings() {
         // Load values from localStorage
         this.elements.apiKeyInput.value = localStorage.getItem('apiKey') || '';
-        this.elements.deepgramApiKeyInput.value = localStorage.getItem('deepgramApiKey') || '';
+        // deepgramApiKeyInput loading removed
         this.elements.voiceSelect.value = localStorage.getItem('voiceName') || 'Aoede';
         this.elements.sampleRateInput.value = localStorage.getItem('sampleRate') || '27000';
         this.elements.systemInstructionsInput.value = localStorage.getItem('systemInstructions') || 'You are a helpful assistant';
@@ -121,18 +109,14 @@ class SettingsManager {
         this.elements.resizeWidthInput.value = localStorage.getItem('resizeWidth') || '640';
         this.elements.qualityInput.value = localStorage.getItem('quality') || '0.3';
 
-        // Initialize safety settings
-        this.elements.harassmentInput.value = localStorage.getItem('harassmentThreshold') || '3';
-        this.elements.dangerousInput.value = localStorage.getItem('dangerousContentThreshold') || '3';
-        this.elements.sexualInput.value = localStorage.getItem('sexuallyExplicitThreshold') || '3';
-        this.elements.civicInput.value = localStorage.getItem('civicIntegrityThreshold') || '3';
+        // Initialize safety settings removed
 
         this.updateDisplayValues();
     }
 
     saveSettings() {
         localStorage.setItem('apiKey', this.elements.apiKeyInput.value);
-        localStorage.setItem('deepgramApiKey', this.elements.deepgramApiKeyInput.value);
+        // deepgramApiKey saving removed
         localStorage.setItem('voiceName', this.elements.voiceSelect.value);
         localStorage.setItem('sampleRate', this.elements.sampleRateInput.value);
         localStorage.setItem('systemInstructions', this.elements.systemInstructionsInput.value);
@@ -145,11 +129,7 @@ class SettingsManager {
         localStorage.setItem('resizeWidth', this.elements.resizeWidthInput.value);
         localStorage.setItem('quality', this.elements.qualityInput.value);
 
-        // Save safety settings
-        localStorage.setItem('harassmentThreshold', this.elements.harassmentInput.value);
-        localStorage.setItem('dangerousContentThreshold', this.elements.dangerousInput.value);
-        localStorage.setItem('sexuallyExplicitThreshold', this.elements.sexualInput.value);
-        localStorage.setItem('civicIntegrityThreshold', this.elements.civicInput.value);
+        // Save safety settings removed
     }
 
     updateDisplayValues() {
@@ -160,21 +140,19 @@ class SettingsManager {
         this.elements.fpsValue.textContent = this.elements.fpsInput.value + ' FPS';
         this.elements.resizeWidthValue.textContent = this.elements.resizeWidthInput.value + 'px';
         this.elements.qualityValue.textContent = this.elements.qualityInput.value;
-        this.elements.harassmentValue.textContent = this.getThresholdLabel(this.elements.harassmentInput.value);
-        this.elements.dangerousValue.textContent = this.getThresholdLabel(this.elements.dangerousInput.value);
-        this.elements.sexualValue.textContent = this.getThresholdLabel(this.elements.sexualInput.value);
-        this.elements.civicValue.textContent = this.getThresholdLabel(this.elements.civicInput.value);
+        // Safety value display updates removed
     }
 
-    getThresholdLabel(value) {
-        const labels = {
-            '0': 'None',
-            '1': 'Low',
-            '2': 'Medium',
-            '3': 'High'
-        };
-        return labels[value] || value;
-    }
+    // getThresholdLabel method can be removed as it's no longer used
+    // getThresholdLabel(value) {
+    //     const labels = {
+    //         '0': 'None',
+    //         '1': 'Low',
+    //         '2': 'Medium',
+    //         '3': 'High'
+    //     };
+    //     return labels[value] || value;
+    // }
 
     toggleCollapsible(toggle, content) {
         const isActive = content.classList.contains('active');
@@ -193,4 +171,5 @@ class SettingsManager {
     }
 }
 
-export default new SettingsManager(); 
+const settingsManager = new SettingsManager();
+export default settingsManager;

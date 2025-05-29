@@ -404,10 +404,8 @@ body {
     left: 20px;
     right: 20px;
     bottom: 120px;
-    background: #282c34;
-        /* Dark theme editor-like background */
-        border: 1px solid #3c4048;
-        /* Subtle border */
+    background: #f0f2f5; /* Light grey background for chat area */
+    border: 1px solid #dee2e6; /* Lighter border */
     border-radius: 10px;
     padding: 15px;
     overflow-y: auto;
@@ -429,18 +427,15 @@ body {
 }
 
 .user-message {
-    background: #3182ce;
-        /* Slightly adjusted blue */
+    background: #007bff; /* Brighter blue for user messages */
     color: white;
     align-self: flex-end;
     margin-left: 20%;
 }
 
 .model-message {
-    background: #3a475a;
-        /* Slightly lighter for better contrast on dark bg */
-        color: #e2e8f0;
-        /* Softer white */
+    background: #e9ecef; /* Light grey for model messages */
+    color: #212529; /* Dark text for readability on light background */
     align-self: flex-start;
     margin-right: 20%;
 }
@@ -453,10 +448,8 @@ body {
 }
 
 .user-audio-info-message {
-    background-color: #4a5568;
-    /* Neutral grey */
-    color: #a0aec0;
-    /* Lighter grey text */
+    background-color: #f8f9fa; /* Very light grey for info messages */
+    color: #6c757d; /* Medium grey text */
     align-self: center;
     /* Center align */
     font-style: italic;
@@ -480,7 +473,7 @@ body {
 
 /* Styles for inline code produced by Markdown conversion */
 .model-message code {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.07); /* Adjusted for lighter model message background */
     padding: 0.1em 0.3em;
     border-radius: 3px;
     font-family: 'Courier New', Courier, monospace;

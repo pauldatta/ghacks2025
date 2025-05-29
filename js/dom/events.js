@@ -4,7 +4,7 @@ import settingsManager from '../settings/settings-manager.js';
 /**
  * Updates UI to show disconnect button and hide connect button
  */
-const showDisconnectButton = () => {
+export const showDisconnectButton = () => { // Added export
     elements.connectBtn.style.display = 'none';
     elements.disconnectBtn.style.display = 'block';
 };
@@ -12,7 +12,7 @@ const showDisconnectButton = () => {
 /**
  * Updates UI to show connect button and hide disconnect button
  */
-const showConnectButton = () => {
+export const showConnectButton = () => { // Added export
     elements.disconnectBtn.style.display = 'none';
     elements.connectBtn.style.display = 'block';
 };
@@ -54,10 +54,23 @@ export function setupEventListeners(agent) {
 
     // Connect handler
     elements.connectBtn.addEventListener('click', async () => {
+        const apiKey = localStorage.getItem('apiKey');
+        if (!apiKey) {
+            alert("Please set your Gemini API Key in settings (⚙️) first.");
+            settingsManager.show(); // Open settings for the user
+            return; 
+        }
         try {
-            await ensureAgentReady(agent);
+            // API key exists, proceed with connection attempt
+            await ensureAgentReady(agent); 
+            // ensureAgentReady calls agent.connect() which will use the key,
+            // and then showDisconnectButton() on successful connection within ensureAgentReady.
         } catch (error) {
             console.error('Error connecting:', error);
+            // ensureAgentReady might not have switched buttons if connect itself failed.
+            showConnectButton(); // Ensure connect button is shown if connection failed
+            alert(`Failed to connect. Please check your API key and network connection. Error: ${error.message}`);
+            settingsManager.show(); // Show settings again for convenience
         }
     });
 

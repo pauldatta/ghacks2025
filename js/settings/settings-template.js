@@ -5,11 +5,6 @@ export const settingsTemplate = `
 </div>
 
 <div class="settings-group">
-    <label for="deepgramApiKey">Deepgram API Key (Optional)</label>
-    <input type="password" id="deepgramApiKey" placeholder="Enter your Deepgram API key">
-</div>
-
-<div class="settings-group">
     <label for="voice">Voice</label>
     <select id="voice">
         <option value="Puck">Puck</option>
@@ -75,30 +70,4 @@ export const settingsTemplate = `
     </div>
 </div>
 
-<div class="settings-group">
-    <div class="collapsible" id="safetyToggle">Safety Settings (Blocking Strength) ▼</div>
-    <div class="collapsible-content">
-        <div class="settings-group">
-            <label for="harassmentThreshold">Harassment (0-3)</label>
-            <input type="range" id="harassmentThreshold" min="0" max="3" step="1">
-            <span id="harassmentValue"></span>
-        </div>
-        <div class="settings-group">
-            <label for="dangerousContentThreshold">Dangerous Content (0-3)</label>
-            <input type="range" id="dangerousContentThreshold" min="0" max="3" step="1">
-            <span id="dangerousValue"></span>
-        </div>
-        <div class="settings-group">
-            <label for="sexuallyExplicitThreshold">Sexually Explicit (0-3)</label>
-            <input type="range" id="sexuallyExplicitThreshold" min="0" max="3" step="1">
-            <span id="sexualValue"></span>
-        </div>
-        <div class="settings-group">
-            <label for="civicIntegrityThreshold">Civic Integrity (0-3)</label>
-            <input type="range" id="civicIntegrityThreshold" min="0" max="3" step="1">
-            <span id="civicValue"></span>
-        </div>
-    </div>
-</div>
-
-<button id="settingsSaveBtn" class="settings-save-btn">Save Settings</button>`; 
+<button id="settingsSaveBtn" class="settings-save-btn">Save Settings</button>`;

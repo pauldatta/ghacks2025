@@ -1,0 +1,9 @@
+# Ignore build output directory
+dist/
+
+# Ignore Node.js modules directory (if any, good practice)
+node_modules/
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db

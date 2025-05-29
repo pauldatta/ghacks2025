@@ -4,11 +4,11 @@ import { getConfig, getWebsocketUrl, getDeepgramApiKey, MODEL_SAMPLE_RATE } from
 import { GoogleSearchTool } from './tools/google-search.js'; // Keep import if other tools might be added later
 import { ToolManager } from './tools/tool-manager.js';
 import { ChatManager } from './chat/chat-manager.js';
-
-import { setupEventListeners } from './dom/events.js';
+import settingsManager from './settings/settings-manager.js'; // Import settingsManager
+import { setupEventListeners, showConnectButton, showDisconnectButton } from './dom/events.js';
 
 const url = getWebsocketUrl();
-const config = getConfig();
+const config = getConfig(); // getConfig reads from localStorage, so API key is implicitly checked by getWebsocketUrl
 const deepgramApiKey = getDeepgramApiKey();
 
 const toolManager = new ToolManager();
@@ -46,6 +46,25 @@ geminiAgent.on('turn_complete', () => {
     chatManager.finalizeStreamingMessage();
 });
 
-geminiAgent.connect();
+// Initial setup based on API key presence
+const apiKey = localStorage.getItem('apiKey');
+if (!apiKey) {
+    console.log("No API key found. Displaying Connect button and prompting for settings.");
+    showConnectButton();
+    // Optionally, automatically show settings if no API key
+    // settingsManager.show(); 
+} else {
+    console.log("API key found. Attempting to connect.");
+    geminiAgent.connect().then(() => {
+        showDisconnectButton(); // Show disconnect if connect is successful
+        console.log("Agent connected successfully on load.");
+    }).catch(error => {
+        console.error("Failed to connect on load with existing API key:", error);
+        showConnectButton(); // Show connect if auto-connect fails
+        // Optionally, notify user or show settings
+        // alert("Failed to connect with the saved API key. Please check your settings.");
+        // settingsManager.show();
+    });
+}
 
 setupEventListeners(geminiAgent);
