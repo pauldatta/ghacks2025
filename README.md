@@ -1,51 +1,29 @@
-# Gemini 2.0 Flash Multimodal Live API Client
+# Gemini Whisperer
 
-A lightweight vanilla JavaScript implementation of the Gemini 2.0 Flash Multimodal Live API client. This project provides real-time interaction with Gemini's API through text, audio, video, and screen sharing capabilities.
+An ambient, always on AI assistant that listens silently in the background and show contextual information on conversations and tasks While using our devices for tasks, learning through videos, or engaging in online conversations, we frequently seek additional details about specific topics.
+Imagine an ever-present, ambient AI that anticipates your needs and offers relevant information or assistance proactively.
+This would eliminate the need to switch between applications or windows, allowing for a smooth continuation of your current task or conversation.
 
-This is a simplified version of [Google's original React implementation](https://github.com/google-gemini/multimodal-live-api-web-console), created in response to [this issue](https://github.com/google-gemini/multimodal-live-api-web-console/issues/19).
-
-## Live Demo on GitHub Pages
-
-[Live Demo](https://viaanthroposbenevolentia.github.io/gemini-2-live-api-demo/)
 
 ## Key Features
 
-- Real-time chat with Gemini 2.0 Flash Multimodal Live API
-- Real-time audio responses from the model
-- Real-time audio input from the user, allowing interruptions
-- Real-time video streaming from the user's webcam
-- Real-time screen sharing from the user's screen
-- Function calling
-- Transcription of the model's audio (if Deepgram API key provided)
-- Built with vanilla JavaScript (no dependencies)
-- Mobile-friendly
+- **Proactive Assistance:** AI is guided by system instructions to listen and offer information proactively.
+- **Text-Based Interaction:** Primarily uses text for communication with the Gemini model.
+- **Voice, Webcam, and Screen Share Inputs:** Supports user input via microphone, camera, and screen sharing.
 
 ## Prerequisites
 
-- Modern web browser with WebRTC, WebSocket, and Web Audio API support
-- Google AI Studio API key
-- `python -m http.server` or `npx http-server` or Live Server extension for VS Code (to host a server for index.html)
+- Modern web browser with WebRTC, WebSocket, and Web Audio API support.
+- Google AI Studio API key for the Gemini API.
+- Node.js and npm (for running the build script).
+- A local HTTP server to run the bundled `index.html` file (e.g., `npx serve`, Python's `http.server`, or VS Code Live Server extension). This is necessary for `localStorage` access (API keys, settings).
 
-## Quick Start
+## UI Overview
 
-1. Get your API key from Google AI Studio
-2. Clone the repository
-
-   ```bash
-   git clone https://github.com/ViaAnthroposBenevolentia/gemini-2-live-api-demo.git
-   ```
-
-3. Start the development server (adjust port if needed):
-
-   ```bash
-   cd gemini-2-live-api-demo
-   python -m http.server 8000 # or npx http-server 8000 or Open with Live Server extension for VS Code
-   ```
-
-4. Access the application at `http://localhost:8000`
-
-5. Open the settings at the top right, paste your API key, and click "Save"
-6. Get free API key from [Deepgram](https://deepgram.com/pricing) and paste in the settings to get real-time transcript (Optional).
+- **Controls:** Buttons/tabs for Audio (microphone), Webcam, and Screen Share allow you to manage your input streams.
+- **Collapsible Chat/Input:** The main section for text input and viewing conversation history can be collapsed/expanded by clicking its header ("Conversation / Input"). It starts collapsed to encourage voice/media-first interaction.
+- **Current Output:** A dedicated area shows the live, streaming response from Gemini. This content persists until a new response from Gemini begins.
+- **Conversation History:** Below the text input (when expanded), a log of the conversation is maintained.
 
 ## Contributing
 
