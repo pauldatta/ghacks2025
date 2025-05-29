@@ -39,6 +39,7 @@ const ensureAgentReady = async (agent) => {
  * @param {GeminiAgent} agent - The main application agent instance
  */
 export function setupEventListeners(agent) {
+    console.log('[SetupEvents] elements.sendBtn:', elements.sendBtn); // New log
     // Disconnect handler
     elements.disconnectBtn.addEventListener('click', async () => {
         try {
@@ -123,6 +124,7 @@ export function setupEventListeners(agent) {
 
     // Message sending handlers
     const sendMessage = async () => {
+        console.log('[SendMessage] Entered sendMessage function.'); // New log
         try {
             await ensureAgentReady(agent);
             const text = elements.messageInput.value.trim();

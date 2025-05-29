@@ -16,8 +16,9 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     min-height: 100vh;
+    line-height: 1.5; /* Improved line height */
     display: flex;
     flex-direction: column;
 }
@@ -402,7 +403,8 @@ body {
     left: 20px;
     right: 20px;
     bottom: 120px;
-    background: rgba(0, 0, 0, 0.7);
+    background: #282c34; /* Dark theme editor-like background */
+    border: 1px solid #3c4048; /* Subtle border */
     border-radius: 10px;
     padding: 15px;
     overflow-y: auto;
@@ -414,24 +416,39 @@ body {
 
 .chat-message {
     padding: 10px 15px;
-    border-radius: 15px;
+    border-radius: 18px; /* Slightly more rounded */
     max-width: 80%;
     word-wrap: break-word;
     line-height: 1.4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Subtle shadow */
 }
 
 .user-message {
-    background: #2c5282;
+    background: #3182ce; /* Slightly adjusted blue */
     color: white;
     align-self: flex-end;
     margin-left: 20%;
 }
 
 .model-message {
-    background: #2d3748;
-    color: white;
+    background: #3a475a; /* Slightly lighter for better contrast on dark bg */
+    color: #e2e8f0; /* Softer white */
     align-self: flex-start;
     margin-right: 20%;
+}
+
+.user-audio-info-message {
+    background-color: #4a5568; /* Neutral grey */
+    color: #a0aec0; /* Lighter grey text */
+    align-self: center; /* Center align */
+    font-style: italic;
+    font-size: 0.85em;
+    max-width: 60%;
+    padding: 6px 12px; /* Smaller padding */
+    border-radius: 12px; /* Consistent rounding */
+    text-align: center;
+    margin-top: 5px; /* Add some space if it's between other messages */
+    margin-bottom: 5px;
 }
 
 .model-message.streaming::after {

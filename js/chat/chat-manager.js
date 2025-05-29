@@ -17,7 +17,7 @@ export class ChatManager {
 
     addUserAudioMessage() {
         const messageDiv = document.createElement('div');
-        messageDiv.className = 'chat-message user-message';
+        messageDiv.className = 'chat-message user-audio-info-message'; // Changed class
         messageDiv.textContent = 'User sent audio';
         this.chatContainer.appendChild(messageDiv);
         this.lastUserMessageType = 'audio';
@@ -71,4 +71,4 @@ export class ChatManager {
         this.lastUserMessageType = null;
         this.currentTranscript = '';
     }
-} 
+}

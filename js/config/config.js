@@ -1,6 +1,6 @@
 export const getWebsocketUrl = () => {
     const apiKey = localStorage.getItem('apiKey');
-    return `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+    return `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
 };
 
 export const getDeepgramApiKey = () => {
@@ -18,48 +18,21 @@ const thresholds = {
 }
 
 export const getConfig = () => ({
-    model: 'models/gemini-2.0-flash-exp',
+    model: 'models/gemini-2.0-flash-live-001', // Changed to user's specified model for text mode
     generationConfig: {
         temperature: parseFloat(localStorage.getItem('temperature')) || 1.8,
         top_p: parseFloat(localStorage.getItem('top_p')) || 0.95,
         top_k: parseInt(localStorage.getItem('top_k')) || 65,
-        responseModalities: "audio",
-        speechConfig: {
-            voiceConfig: { 
-                prebuiltVoiceConfig: { 
-                    voiceName: localStorage.getItem('voiceName') || 'Aoede'
-                }
-            }
-        }
+        responseModalities: ["TEXT"], // Ensuring text mode
+        // speechConfig removed to ensure pure text mode and avoid voice extraction errors
     },
     systemInstruction: {
         parts: [{
-            text: localStorage.getItem('systemInstructions') || "You are a helpful assistant"
+            text: localStorage.getItem('systemInstructions') || "You are a proactive AI assistant. Your primary role is to silently listen to the user and identify opportunities to provide helpful information or perform relevant actions using available tools, such as Google Search. When you detect a relevant topic or an implicit need based on the user's ongoing conversation or statements, proactively offer concise and useful content, search results, or tool outputs. Strive to be helpful without being intrusive, anticipating the user's needs for information or actions."
         }]
     },
-    tools: {
-        functionDeclarations: [],
-    },
-    safetySettings: [
-        {
-            "category": "HARM_CATEGORY_HARASSMENT",
-            "threshold": thresholds[localStorage.getItem('harassmentThreshold')] || "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
-        },
-        {
-            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-            "threshold": thresholds[localStorage.getItem('dangerousContentThreshold')] || "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
-        },
-        {
-            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            "threshold": thresholds[localStorage.getItem('sexuallyExplicitThreshold')] || "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
-        },
-        {
-            "category": "HARM_CATEGORY_HATE_SPEECH",
-            "threshold": thresholds[localStorage.getItem('hateSpeechThreshold')] || "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
-        },
-        {
-            "category": "HARM_CATEGORY_CIVIC_INTEGRITY",
-            "threshold": thresholds[localStorage.getItem('civicIntegrityThreshold')] || "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
-        }
+    tools: [ // Changed to an array to specify built-in Google Search
+        { "googleSearch": {} } 
+        // Any custom function declarations will be added by GeminiAgent constructor
     ]
 });

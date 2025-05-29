@@ -23,13 +23,15 @@ export class GeminiAgent{
         transcribeModelsSpeech = true,
         transcribeUsersSpeech = false,
         modelSampleRate = 24000,
-        toolManager = null
+        toolManager = null,
+        chatManager = null // Added chatManager
     } = {}) {
         if (!url) throw new Error('WebSocket URL is required');
         if (!config) throw new Error('Config is required');
 
         this.initialized = false;
         this.connected = false;
+        this.chatManager = chatManager; // Store chatManager instance
 
         // For audio components
         this.audioContext = null;
@@ -74,7 +76,24 @@ export class GeminiAgent{
         
         // Add function declarations to config
         this.toolManager = toolManager;
-        config.tools.functionDeclarations = toolManager.getToolDeclarations() || [];
+        if (config.tools && Array.isArray(config.tools)) {
+            const customFunctionDeclarations = this.toolManager.getToolDeclarations() || [];
+            if (customFunctionDeclarations.length > 0) {
+                let funcDeclToolEntry = config.tools.find(tool => tool.hasOwnProperty('functionDeclarations'));
+                if (funcDeclToolEntry && Array.isArray(funcDeclToolEntry.functionDeclarations)) {
+                    funcDeclToolEntry.functionDeclarations.push(...customFunctionDeclarations);
+                } else {
+                    // If no existing functionDeclarations entry, or it's not an array, add a new one.
+                    // This also handles the case where config.tools = [{ "googleSearch": {} }] initially.
+                    config.tools.push({ functionDeclarations: customFunctionDeclarations });
+                }
+            }
+            // If there are no custom function declarations, config.tools remains as is (e.g., just with googleSearch).
+        } else {
+            // Fallback or error if config.tools is not an array as expected by new structure
+            console.warn('config.tools is not an array. Expected an array for tool configurations (e.g., for googleSearch and functionDeclarations). Setting up default for functionDeclarations.');
+            config.tools = { functionDeclarations: this.toolManager.getToolDeclarations() || [] };
+        }
         this.config = config;
 
         this.name = name;
@@ -115,6 +134,33 @@ export class GeminiAgent{
 
         this.client.on('tool_call', async (toolCall) => {
             await this.handleToolCall(toolCall);
+        });
+
+        // Handle incoming text content from the model
+        this.client.on('content', (data) => {
+            console.log('GeminiAgent received content event:', JSON.stringify(data, null, 2));
+            if (this.chatManager && data.modelTurn && data.modelTurn.parts) {
+                let textFoundInEvent = false;
+                data.modelTurn.parts.forEach(part => {
+                    console.log('GeminiAgent processing part:', JSON.stringify(part, null, 2));
+                    if (part.text) {
+                        console.log('GeminiAgent found text in part:', part.text);
+                        this.chatManager.updateStreamingMessage(part.text);
+                        textFoundInEvent = true;
+                    } else {
+                        console.log('GeminiAgent: part does not contain text property.', part);
+                    }
+                });
+                if (!textFoundInEvent) {
+                    console.log('GeminiAgent: No text found in any parts of this content event.');
+                }
+            } else {
+                let reason = [];
+                if (!this.chatManager) reason.push("chatManager is missing");
+                if (!data.modelTurn) reason.push("data.modelTurn is missing");
+                else if (!data.modelTurn.parts) reason.push("data.modelTurn.parts is missing");
+                console.log(`GeminiAgent: Cannot process content event because: ${reason.join(', ')}.`);
+            }
         });
     }
         
@@ -302,10 +348,11 @@ export class GeminiAgent{
         }
 
         console.info('Initializing Deepgram model speech transcriber...');
-
+        console.log('[DeepgramInit] About to create connectionPromise.');
         // Promise to send keep-alive every 10 seconds once connected
-        const connectionPromise = new Promise((resolve) => {
+        const connectionPromise = new Promise((resolve, reject) => { // Added reject
             this.modelTranscriber.on('connected', () => {
+                console.log('[DeepgramInit] "connected" event received.');
                 console.info('Model speech transcriber connection established, setting up keep-alive...');
                 this.modelsKeepAliveInterval = setInterval(() => {
                     if (this.modelTranscriber.isConnected) {
@@ -315,7 +362,12 @@ export class GeminiAgent{
                 }, 10000);
                 resolve();
             });
+            // Add a timeout for the connection promise for debugging
+            setTimeout(() => {
+                reject(new Error('[DeepgramInit] Timeout waiting for "connected" event after connect() call.'));
+            }, 15000); // 15 second timeout
         });
+        console.log('[DeepgramInit] connectionPromise created.');
 
         // Just log transcription to console for now
         this.modelTranscriber.on('transcription', (transcript) => {
@@ -324,8 +376,17 @@ export class GeminiAgent{
         });
 
         // Connect to Deepgram and execute promise
-        await this.modelTranscriber.connect();
-        await connectionPromise;
+        try {
+            console.log('[DeepgramInit] About to call this.modelTranscriber.connect().');
+            await this.modelTranscriber.connect();
+            console.log('[DeepgramInit] this.modelTranscriber.connect() completed.');
+            console.log('[DeepgramInit] About to await connectionPromise.');
+            await connectionPromise;
+            console.log('[DeepgramInit] connectionPromise resolved.');
+        } catch (error) {
+            console.error('[DeepgramInit] Error during modelTranscriber.connect() or connectionPromise:', error);
+            throw error; // Re-throw to be caught by initialize()'s main catch block
+        }
     }
 
     /**
@@ -369,7 +430,9 @@ export class GeminiAgent{
      * Streams audio data to the model in real-time, handling interruptions
      */
     async initialize() {
-        try {            
+        console.log('[AgentInitialize] Method entered.'); // New log
+        try {
+            console.log('[AgentInitialize] Try block entered.'); // New log
             // Initialize audio components
             this.audioContext = new AudioContext();
             this.audioStreamer = new AudioStreamer(this.audioContext);

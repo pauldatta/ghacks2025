@@ -71,6 +71,14 @@ export class GeminiWebsocketClient extends EventEmitter {
                     console.error('Non-blob message received', event);
                 }
             });
+
+            ws.addEventListener('close', (event) => {
+                console.warn(`${this.name} WebSocket connection closed. Code: ${event.code}, Reason: "${event.reason}", WasClean: ${event.wasClean}`);
+                this.ws = null; // Ensure ws is nulled
+                this.isConnecting = false;
+                this.connectionPromise = null; // Reset connection promise
+                this.emit('disconnected'); // Emit a custom event
+            });
         });
 
         return this.connectionPromise;

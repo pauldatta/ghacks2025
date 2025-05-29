@@ -21,7 +21,8 @@ const geminiAgent = new GeminiAgent({
     config,
     deepgramApiKey,
     modelSampleRate: MODEL_SAMPLE_RATE,
-    toolManager
+    toolManager,
+    chatManager // Pass chatManager instance
 });
 
 // Handle chat-related events

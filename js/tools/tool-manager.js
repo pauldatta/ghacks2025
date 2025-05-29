@@ -56,7 +56,7 @@ export class ToolManager {
             const result = await tool.execute(args);
             return {
                 output: result,
-                id: id,
+                id: functionCall.id, // Ensure the original functionCall id is used
                 error: null
             }
 
@@ -64,7 +64,7 @@ export class ToolManager {
             console.error(`Tool execution failed: ${name}`, error);
             return {
                 output: null,
-                id: id,
+                id: functionCall.id, // Ensure the original functionCall id is used
                 error: error.message
             };
         }
