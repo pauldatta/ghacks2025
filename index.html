@@ -26,7 +26,11 @@
                 <button id="settingsBtn" class="text-gray-600 hover:text-gray-800">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 </button>
-                <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">S</div> <!-- User Avatar Placeholder -->
+                <button id="helpBtn" class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-question-circle fa-lg"></i>
+                </button>
+                <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">PD
+                </div> <!-- User Avatar Placeholder -->
             </div>
         </nav>
 
@@ -50,6 +54,10 @@
                 <!-- Previews for camera and screen -->
                 <div id="cameraPreview" class="camera-preview my-4 w-64 h-48 bg-gray-200 rounded"></div>
                 <div id="screenPreview" class="screen-preview my-4 w-64 h-36 bg-gray-200 rounded"></div>
+                <p id="verbalCueHint" class="text-xs text-center text-gray-500 mt-1 mb-4">Hint: Use phrases like "Let me check..." "Let
+                    me see..." "What about..." "Would it help if..." for
+                    proactive help.
+                </p>
             </div>
             
             <!-- Collapsible Chat Section -->
@@ -92,6 +100,30 @@
             
             <canvas id="visualizer" class="visualizer w-full h-20"></canvas> <!-- Visualizer, can be styled/positioned -->
         </div>
+<!-- Help Modal -->
+<div id="helpModal"
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center hidden z-50">
+    <div class="relative p-8 bg-white w-full max-w-md m-auto flex-col flex rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">Gemini Whisperer - Proactive Cues</h3>
+            <button id="closeHelpModalBtn" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+        </div>
+        <div class="text-sm text-gray-700 space-y-2">
+            <p>Gemini Whisperer can provide proactive assistance when it detects certain verbal cues. Try using phrases
+                like:</p>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>"Let me check..."</li>
+                <li>"Let me see..."</li>
+                <li>"What about..."</li>
+                <li>"Would it help if..."</li>
+            </ul>
+            <p>Using these types of phrases can help the AI understand when you might be looking for information or
+                assistance related to your current context.</p>
+        </div>
+    </div>
+</div>
     </div>
 
     <!-- Inline script moved to js/dom/events.js and called from js/script.js -->

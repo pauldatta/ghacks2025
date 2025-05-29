@@ -7,6 +7,7 @@ const elements = {
     cameraBtn: document.getElementById('cameraBtn'),
     screenBtn: document.getElementById('screenBtn'),
     settingsBtn: document.getElementById('settingsBtn'),
+    helpBtn: document.getElementById('helpBtn'), // Added help button
 
     // Preview elements
     cameraPreview: document.getElementById('cameraPreview'),
@@ -17,7 +18,11 @@ const elements = {
     sendBtn: document.getElementById('sendBtn'),
 
     // Visualizer canvas
-    visualizerCanvas: document.getElementById('visualizer')
+    visualizerCanvas: document.getElementById('visualizer'),
+
+    // Help Modal elements
+    helpModal: document.getElementById('helpModal'), // Added help modal
+    closeHelpModalBtn: document.getElementById('closeHelpModalBtn') // Added close help modal button
 };
 
 export default elements;

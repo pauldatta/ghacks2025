@@ -198,4 +198,24 @@ export function setupNewUIEventListeners() {
     } else {
         console.warn('Chat toggle elements not found, collapsible chat UI might not work.');
     }
+
+    // Help Modal listeners
+    if (elements.helpBtn && elements.helpModal && elements.closeHelpModalBtn) {
+        elements.helpBtn.addEventListener('click', () => {
+            elements.helpModal.classList.remove('hidden');
+        });
+
+        elements.closeHelpModalBtn.addEventListener('click', () => {
+            elements.helpModal.classList.add('hidden');
+        });
+
+        // Click on overlay (the modal backdrop itself) to close
+        elements.helpModal.addEventListener('click', (event) => {
+            if (event.target === elements.helpModal) { // Ensure click is on backdrop, not content
+                elements.helpModal.classList.add('hidden');
+            }
+        });
+    } else {
+        console.warn('Help modal elements not found, help functionality might not work.');
+    }
 }

@@ -4,6 +4,12 @@ An ambient, always on AI assistant that listens silently in the background and s
 Imagine an ever-present, ambient AI that anticipates your needs and offers relevant information or assistance proactively.
 This would eliminate the need to switch between applications or windows, allowing for a smooth continuation of your current task or conversation.
 
+**Proactive Cues:** To encourage proactive assistance from Gemini Whisperer, you can use verbal cues such as:
+  - "Let me check..."
+  - "Let me see..."
+  - "What about..."
+  - "Would it help if..."
+    These phrases can help the AI anticipate when you might be looking for information. More details can be found via the help icon (<i class="fas fa-question-circle"></i>) in the app.
 
 ## Key Features
 
