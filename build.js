@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const Terser = require('terser');
+const csso = require('csso');
 
 const HTML_INPUT_PATH = 'index.html';
 const CSS_INPUT_PATH = 'css/styles.css';
@@ -132,8 +134,18 @@ async function buildSingleHtmlFile() {
     }
 
     let htmlContent = readFileContent(HTML_INPUT_PATH);
-    const cssContent = readFileContent(CSS_INPUT_PATH);
-    const audioWorkletContent = readFileContent(AUDIO_WORKLET_PATH);
+    let cssContent = readFileContent(CSS_INPUT_PATH);
+    let audioWorkletContent = readFileContent(AUDIO_WORKLET_PATH);
+
+    // Minify CSS
+    console.log('Minifying CSS...');
+    try {
+        cssContent = csso.minify(cssContent).css;
+        console.log('CSS minified successfully.');
+    } catch (error) {
+        console.error('Error minifying CSS:', error);
+        process.exit(1);
+    }
 
     // Inline CSS
     console.log('Inlining CSS...');
@@ -141,6 +153,20 @@ async function buildSingleHtmlFile() {
         /<link\s+rel="stylesheet"\s+href="css\/styles\.css">/,
         `<style>\n${cssContent}\n</style>`
     );
+
+    // Minify Audio Worklet JS
+    console.log('Minifying Audio Worklet JS...');
+    try {
+        const minifiedWorklet = await Terser.minify(audioWorkletContent);
+        if (minifiedWorklet.error) {
+            throw minifiedWorklet.error;
+        }
+        audioWorkletContent = minifiedWorklet.code;
+        console.log('Audio Worklet JS minified successfully.');
+    } catch (error) {
+        console.error('Error minifying Audio Worklet JS:', error);
+        process.exit(1);
+    }
 
     // Concatenate and process JS files
     console.log('Processing JavaScript files...');
@@ -151,12 +177,9 @@ async function buildSingleHtmlFile() {
         allJsContent += processJsContent(jsContent, fullJsPath);
     }
     
-    // Prepare audio worklet code for inlining
-    const audioWorkletString = JSON.stringify(audioWorkletContent)
-        .replace(/\\n/g, '\\n') // Keep newlines escaped for the string
-        .slice(1, -1); // Remove surrounding quotes from JSON.stringify
-
     // Note: workletLoaderCode was removed from here. Its logic is integrated below.
+    // The variable 'audioWorkletString' that was here, created using JSON.stringify, was found to be unused 
+    // as the minified 'audioWorkletContent' is directly used for the Blob.
     
     // Prepare the main application code block that will go inside startGeminiLiveApp
     let mainAppCodeInner = `'use strict';\n`;
@@ -188,6 +211,20 @@ async function buildSingleHtmlFile() {
 
     // Prepend the EventEmitter UMD code, then wrap mainAppCodeInner in startGeminiLiveApp and add load listener
     allJsContent = `${EVENT_EMITTER_UMD_CODE}\n\nfunction startGeminiLiveApp() {\n${mainAppCodeInner}\n}\nwindow.addEventListener('load', startGeminiLiveApp);`;
+
+    // Minify all concatenated JavaScript
+    console.log('Minifying all JavaScript...');
+    try {
+        const minifiedJs = await Terser.minify(allJsContent);
+        if (minifiedJs.error) {
+            throw minifiedJs.error;
+        }
+        allJsContent = minifiedJs.code;
+        console.log('All JavaScript minified successfully.');
+    } catch (error) {
+        console.error('Error minifying JavaScript:', error);
+        process.exit(1);
+    }
     
     // Inline JavaScript
     console.log('Inlining JavaScript...');

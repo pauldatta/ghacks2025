@@ -243,7 +243,7 @@ export class GeminiWebsocketClient extends EventEmitter {
 
     async sendJSON(json) {        
         try {
-            this.ws.send(JSON.stringify(json));
+            this.ws.send(JSON.stringify(json));t
             // console.debug(`JSON Object was sent to ${this.name}:`, json);
         } catch (error) {
             throw new Error(`Failed to send ${json} to ${this.name}:` + error);
