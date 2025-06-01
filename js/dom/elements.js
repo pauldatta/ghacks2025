@@ -7,7 +7,11 @@ const elements = {
     cameraBtn: document.getElementById('cameraBtn'),
     screenBtn: document.getElementById('screenBtn'),
     settingsBtn: document.getElementById('settingsBtn'),
+    logBtn: document.getElementById('logBtn'), // Added log button
     helpBtn: document.getElementById('helpBtn'), // Added help button
+
+    // Indicator element
+    listeningIndicator: document.getElementById('listeningIndicator'),
 
     // Preview elements
     cameraPreview: document.getElementById('cameraPreview'),
@@ -22,7 +26,12 @@ const elements = {
 
     // Help Modal elements
     helpModal: document.getElementById('helpModal'), // Added help modal
-    closeHelpModalBtn: document.getElementById('closeHelpModalBtn') // Added close help modal button
+    closeHelpModalBtn: document.getElementById('closeHelpModalBtn'), // Added close help modal button
+
+    // Log Modal elements
+    logModal: document.getElementById('logModal'),
+    closeLogModalBtn: document.getElementById('closeLogModalBtn'),
+    logOutput: document.getElementById('logOutput')
 };
 
 export default elements;

@@ -39,8 +39,7 @@ export const getConfig = () => ({
             "
         }]
     },
-    tools: [ // Changed to an array to specify built-in Google Search
+    tools: [
         { "googleSearch": {} } 
-        // Any custom function declarations will be added by GeminiAgent constructor
     ]
 });

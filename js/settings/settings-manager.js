@@ -143,17 +143,6 @@ class SettingsManager {
         // Safety value display updates removed
     }
 
-    // getThresholdLabel method can be removed as it's no longer used
-    // getThresholdLabel(value) {
-    //     const labels = {
-    //         '0': 'None',
-    //         '1': 'Low',
-    //         '2': 'Medium',
-    //         '3': 'High'
-    //     };
-    //     return labels[value] || value;
-    // }
-
     toggleCollapsible(toggle, content) {
         const isActive = content.classList.contains('active');
         content.classList.toggle('active');

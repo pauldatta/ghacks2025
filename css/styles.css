@@ -491,6 +491,27 @@ body {
     color: #1a202c; /* Default dark text for light background */
 }
 
+/* Styles for control buttons (Audio, Webcam, Screen Share) */
+.control-btn-style {
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.control-btn-style.active {
+    background-color: #3b82f6; /* Blue background for active */
+    color: white;
+    border-color: #3b82f6; /* Blue border for active */
+}
+
+.control-btn-style.inactive {
+    background-color: #ffffff; /* White background for inactive */
+    color: #4b5563; /* Gray text for inactive */
+    border-color: #d1d5db; /* Gray border for inactive */
+}
+
+.control-btn-style.inactive:hover {
+    background-color: #f3f4f6; /* Light gray hover for inactive */
+}
+
 .status-icon {
     width: 20px;
     height: 20px;
@@ -560,4 +581,35 @@ body {
     border-radius: 3px;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.9em;
+}
+
+/* Listening Indicator Animation */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+.animate-pulse {
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Styles for Console Log Modal */
+.log-timestamp {
+    color: #9ca3af; /* Tailwind gray-400 */
+    margin-right: 0.5em;
+}
+.log-type-log {
+    color: #6b7280; /* Tailwind gray-500 */
+}
+.log-type-error {
+    color: #ef4444; /* Tailwind red-500 */
+    font-weight: bold;
+}
+.log-type-warn {
+    color: #f59e0b; /* Tailwind amber-500 */
+}
+.log-type-info {
+    color: #3b82f6; /* Tailwind blue-500 */
+}
+.log-message {
+    white-space: pre-wrap; /* Allow wrapping for long messages and JSON */
 }

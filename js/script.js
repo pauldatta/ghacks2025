@@ -6,6 +6,7 @@ import { ToolManager } from './tools/tool-manager.js';
 import { ChatManager } from './chat/chat-manager.js';
 import settingsManager from './settings/settings-manager.js'; // Import settingsManager
 import { setupEventListeners, showConnectButton, showDisconnectButton, setupNewUIEventListeners } from './dom/events.js'; // Added setupNewUIEventListeners
+import elements from './dom/elements.js'; // Import elements for listening indicator
 
 const url = getWebsocketUrl();
 const config = getConfig(); // getConfig reads from localStorage, so API key is implicitly checked by getWebsocketUrl
@@ -46,6 +47,18 @@ geminiAgent.on('turn_complete', () => {
     chatManager.finalizeStreamingMessage();
 });
 
+geminiAgent.on('listening_started', () => {
+    if (elements.listeningIndicator) {
+        elements.listeningIndicator.classList.remove('hidden');
+    }
+});
+
+geminiAgent.on('listening_stopped', () => {
+    if (elements.listeningIndicator) {
+        elements.listeningIndicator.classList.add('hidden');
+    }
+});
+
 // Initial setup based on API key presence
 const apiKey = localStorage.getItem('apiKey');
 if (!apiKey) {
@@ -69,3 +82,68 @@ if (!apiKey) {
 
 setupEventListeners(geminiAgent);
 setupNewUIEventListeners(); // Call to setup new UI interactions
+
+// Capture console logs for the modal
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+const originalConsoleInfo = console.info;
+
+const logHistory = [];
+const MAX_LOG_ENTRIES = 200; // Keep up to 200 log entries
+
+function formatLogMessage(args, type) {
+    const timestamp = new Date().toLocaleTimeString();
+    const message = args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+            try {
+                return JSON.stringify(arg, null, 2);
+            } catch (e) {
+                return '[Unserializable Object]';
+            }
+        }
+        return String(arg);
+    }).join(' ');
+    return `<span class="log-timestamp">[${timestamp}]</span> <span class="log-type-${type}">${type.toUpperCase()}:</span> <span class="log-message">${message}</span>`;
+}
+
+function addToLogHistory(formattedMessage) {
+    logHistory.push(formattedMessage);
+    if (logHistory.length > MAX_LOG_ENTRIES) {
+        logHistory.shift(); // Remove the oldest entry
+    }
+    if (elements.logOutput && elements.logModal && !elements.logModal.classList.contains('hidden')) {
+        elements.logOutput.innerHTML = logHistory.join('<br>');
+        elements.logOutput.scrollTop = elements.logOutput.scrollHeight; // Auto-scroll to bottom
+    }
+}
+
+console.log = (...args) => {
+    originalConsoleLog.apply(console, args);
+    addToLogHistory(formatLogMessage(args, 'log'));
+};
+
+console.error = (...args) => {
+    originalConsoleError.apply(console, args);
+    addToLogHistory(formatLogMessage(args, 'error'));
+};
+
+console.warn = (...args) => {
+    originalConsoleWarn.apply(console, args);
+    addToLogHistory(formatLogMessage(args, 'warn'));
+};
+
+console.info = (...args) => {
+    originalConsoleInfo.apply(console, args);
+    addToLogHistory(formatLogMessage(args, 'info'));
+};
+
+// Add event listener to populate log output when modal is opened
+if (elements.logBtn) {
+    elements.logBtn.addEventListener('click', () => {
+        if (elements.logOutput) {
+            elements.logOutput.innerHTML = logHistory.join('<br>');
+            elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
+        }
+    });
+}

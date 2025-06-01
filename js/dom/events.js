@@ -2,7 +2,7 @@ import elements from './elements.js';
 import settingsManager from '../settings/settings-manager.js';
 
 /**
- * Updates UI to show disconnect button and hide connect button
+ tore * Updates UI to show disconnect button and hide connect button
  */
 export const showDisconnectButton = () => { // Added export
     elements.connectBtn.style.display = 'none';
@@ -18,6 +18,7 @@ export const showConnectButton = () => { // Added export
 };
 
 let isCameraActive = false;
+let isMicActive = false; // Added for microphone state
 
 /**
  * Ensures the agent is connected and initialized
@@ -45,8 +46,14 @@ export function setupEventListeners(agent) {
         try {
             await agent.disconnect();
             showConnectButton();
-            [elements.cameraBtn, elements.screenBtn, elements.micBtn].forEach(btn => btn.classList.remove('active'));
+            [elements.cameraBtn, elements.screenBtn, elements.micBtn].forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('inactive'); // Ensure inactive state is set
+            });
+            elements.listeningIndicator.classList.add('hidden');
             isCameraActive = false;
+            isMicActive = false; // Reset mic state
+            // isScreenShareActive is handled by its own event listener for 'screenshare_stopped'
         } catch (error) {
             console.error('Error disconnecting:', error);
         }
@@ -78,11 +85,24 @@ export function setupEventListeners(agent) {
     elements.micBtn.addEventListener('click', async () => {
         try {
             await ensureAgentReady(agent);
-            await agent.toggleMic();
-            elements.micBtn.classList.toggle('active');
+            console.log(`[MicBtn] Attempting to toggle microphone. Current isMicActive: ${isMicActive}. Current classes: ${elements.micBtn.className}`);
+            await agent.toggleMic(); // Call the method, ignore its undefined return
+            isMicActive = !isMicActive; // Toggle local state
+            console.log(`[MicBtn] agent.toggleMic() called. New isMicActive: ${isMicActive}`);
+            
+            elements.micBtn.classList.toggle('active', isMicActive);
+            elements.micBtn.classList.toggle('inactive', !isMicActive);
+            elements.listeningIndicator.classList.toggle('hidden', !isMicActive);
+            
+            console.log(`[MicBtn] Microphone toggle processed. New classes: ${elements.micBtn.className}. Listening indicator hidden: ${elements.listeningIndicator.classList.contains('hidden')}`);
         } catch (error) {
-            console.error('Error toggling microphone:', error);
+            console.error('[MicBtn] Error toggling microphone:', error);
+            // Fallback UI state on error
+            isMicActive = false; // Reset state on error
             elements.micBtn.classList.remove('active');
+            elements.micBtn.classList.add('inactive');
+            elements.listeningIndicator.classList.add('hidden');
+            console.log('[MicBtn] Error occurred. Classes set to inactive. isMicActive reset to false.');
         }
     });
 
@@ -94,14 +114,17 @@ export function setupEventListeners(agent) {
             if (!isCameraActive) {
                 await agent.startCameraCapture();
                 elements.cameraBtn.classList.add('active');
+                elements.cameraBtn.classList.remove('inactive');
             } else {
                 await agent.stopCameraCapture();
                 elements.cameraBtn.classList.remove('active');
+                elements.cameraBtn.classList.add('inactive');
             }
             isCameraActive = !isCameraActive;
         } catch (error) {
             console.error('Error toggling camera:', error);
             elements.cameraBtn.classList.remove('active');
+            elements.cameraBtn.classList.add('inactive');
             isCameraActive = false;
         }
     });
@@ -112,6 +135,7 @@ export function setupEventListeners(agent) {
     // Listen for screen share stopped events (from native browser controls)
     agent.on('screenshare_stopped', () => {
         elements.screenBtn.classList.remove('active');
+        elements.screenBtn.classList.add('inactive');
         isScreenShareActive = false;
         console.info('Screen share stopped');
     });
@@ -123,14 +147,17 @@ export function setupEventListeners(agent) {
             if (!isScreenShareActive) {
                 await agent.startScreenShare();
                 elements.screenBtn.classList.add('active');
+                elements.screenBtn.classList.remove('inactive');
             } else {
                 await agent.stopScreenShare();
                 elements.screenBtn.classList.remove('active');
+                elements.screenBtn.classList.add('inactive');
             }
             isScreenShareActive = !isScreenShareActive;
         } catch (error) {
             console.error('Error toggling screen share:', error);
             elements.screenBtn.classList.remove('active');
+            elements.screenBtn.classList.add('inactive');
             isScreenShareActive = false;
         }
     });
@@ -158,25 +185,43 @@ export function setupEventListeners(agent) {
 
     // Settings button click
     elements.settingsBtn.addEventListener('click', () => settingsManager.show());
+
+    // Log button click
+    if (elements.logBtn && elements.logModal && elements.closeLogModalBtn) {
+        elements.logBtn.addEventListener('click', () => {
+            elements.logModal.classList.remove('hidden');
+            // Optionally, populate logs here or have a live update mechanism
+        });
+
+        elements.closeLogModalBtn.addEventListener('click', () => {
+            elements.logModal.classList.add('hidden');
+        });
+
+        elements.logModal.addEventListener('click', (event) => {
+            if (event.target === elements.logModal) {
+                elements.logModal.classList.add('hidden');
+            }
+        });
+    } else {
+        console.warn('Log modal elements not found, log functionality might not work.');
+    }
+
+    // Initial state for control buttons
+    [elements.cameraBtn, elements.screenBtn].forEach(btn => {
+        btn.classList.add('inactive'); // Start as inactive
+        btn.classList.remove('active');
+    });
+    // Mic button initial state based on isMicActive (which is false initially)
+    elements.micBtn.classList.toggle('active', isMicActive);
+    elements.micBtn.classList.toggle('inactive', !isMicActive);
+    elements.listeningIndicator.classList.toggle('hidden', !isMicActive); // Hide listening indicator initially
+
 }
 
 // Initialize settings
 settingsManager;
 
 export function setupNewUIEventListeners() {
-    // JavaScript for tab-like behavior 
-    const controlButtons = document.querySelectorAll('.control-button'); // These are micBtn, cameraBtn, screenBtn
-    controlButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            controlButtons.forEach(btn => {
-                btn.classList.remove('active', 'text-blue-600', 'font-semibold');
-                // Also remove our custom CSS 'active' if it's different from Tailwind's
-                // For now, assuming Tailwind's 'active' class is what's primarily used or they align.
-            });
-            button.classList.add('active', 'text-blue-600', 'font-semibold');
-        });
-    });
-
     // JavaScript for collapsible chat section
     const chatToggle = document.querySelector('.chat-section-toggle');
     const chatContent = document.getElementById('chatBoxContent');
