@@ -9,7 +9,7 @@ import { setupEventListeners, showConnectButton, showDisconnectButton, setupNewU
 import elements from './dom/elements.js'; // Import elements for listening indicator
 
 const url = getWebsocketUrl();
-const config = getConfig(); // getConfig reads from localStorage, so API key is implicitly checked by getWebsocketUrl
+// const config = getConfig(); // getConfig will now be called by the agent
 const deepgramApiKey = getDeepgramApiKey();
 
 const toolManager = new ToolManager();
@@ -19,7 +19,7 @@ const chatManager = new ChatManager();
 
 const geminiAgent = new GeminiAgent({
     url,
-    config,
+    getConfigFunc: getConfig, // Pass the getConfig function itself
     deepgramApiKey,
     modelSampleRate: MODEL_SAMPLE_RATE,
     toolManager,

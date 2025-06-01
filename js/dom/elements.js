@@ -31,7 +31,14 @@ const elements = {
     // Log Modal elements
     logModal: document.getElementById('logModal'),
     closeLogModalBtn: document.getElementById('closeLogModalBtn'),
-    logOutput: document.getElementById('logOutput')
+    logOutput: document.getElementById('logOutput'),
+
+    // Whisperer Mode Toggle
+    whispererModeToggle: document.getElementById('whispererModeToggle'),
+    appModeStatus: document.getElementById('appModeStatus'), // Span to show current mode
+
+    // Verbal Cue Hint
+    verbalCueHint: document.getElementById('verbalCueHint')
 };
 
 export default elements;

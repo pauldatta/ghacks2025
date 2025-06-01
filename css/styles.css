@@ -613,3 +613,26 @@ body {
 .log-message {
     white-space: pre-wrap; /* Allow wrapping for long messages and JSON */
 }
+
+/* Toggle Switch Styles */
+/* Targeting the hidden checkbox */
+input[type="checkbox"].sr-only:checked + .block {
+    background-color: #3b82f6; /* Blue background when checked (Tailwind blue-500) */
+}
+
+input[type="checkbox"].sr-only:checked + .block + .dot {
+    transform: translateX(100%);
+    background-color: white; /* Keep dot white */
+}
+
+/* Adjust dot positioning if needed based on w-10 h-6 for block and w-4 h-4 for dot */
+/* w-10 is 2.5rem (40px), h-6 is 1.5rem (24px) */
+/* w-4 is 1rem (16px), h-4 is 1rem (16px) */
+/* Dot needs to move from left-1 (0.25rem) to effectively right-1. */
+/* translateX(100%) on the dot might be too much if its parent is just the dot itself. */
+/* The dot is 0.25rem from left. Block width is 2.5rem. Dot width is 1rem. */
+/* Space for dot to move = Block width - Dot width - initial offset - end offset */
+/* 2.5rem - 1rem - 0.25rem (left-1) - 0.25rem (to be right-1) = 1rem */
+input[type="checkbox"].sr-only:checked ~ .dot { /* Using ~ general sibling combinator */
+    transform: translateX(1rem); /* 1rem = 16px, which is w-4 */
+}

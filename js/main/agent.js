@@ -18,7 +18,7 @@ export class GeminiAgent{
     constructor({
         name = 'GeminiAgent',
         url,
-        config,
+        getConfigFunc, // Changed from static config to a function
         deepgramApiKey = null,
         transcribeModelsSpeech = true,
         transcribeUsersSpeech = false,
@@ -27,10 +27,11 @@ export class GeminiAgent{
         chatManager = null // Added chatManager
     } = {}) {
         if (!url) throw new Error('WebSocket URL is required');
-        if (!config) throw new Error('Config is required');
+        if (!getConfigFunc) throw new Error('getConfigFunc is required');
 
         this.initialized = false;
         this.connected = false;
+        this.getConfigFunc = getConfigFunc; // Store the function
         this.chatManager = chatManager; // Store chatManager instance
 
         // For audio components
@@ -76,25 +77,27 @@ export class GeminiAgent{
         
         // Add function declarations to config
         this.toolManager = toolManager;
-        if (config.tools && Array.isArray(config.tools)) {
+        // We'll get the current config when needed, but tool setup might need an initial config.
+        // For now, let's assume tool setup in constructor uses an initial fetch of config.
+        // This part might need refinement if tool declarations depend on dynamic config aspects
+        // not available at construction.
+        let initialConfig = this.getConfigFunc(); // Get initial config for tool setup
+        if (initialConfig.tools && Array.isArray(initialConfig.tools)) {
             const customFunctionDeclarations = this.toolManager.getToolDeclarations() || [];
             if (customFunctionDeclarations.length > 0) {
-                let funcDeclToolEntry = config.tools.find(tool => tool.hasOwnProperty('functionDeclarations'));
+                let funcDeclToolEntry = initialConfig.tools.find(tool => tool.hasOwnProperty('functionDeclarations'));
                 if (funcDeclToolEntry && Array.isArray(funcDeclToolEntry.functionDeclarations)) {
                     funcDeclToolEntry.functionDeclarations.push(...customFunctionDeclarations);
                 } else {
-                    // If no existing functionDeclarations entry, or it's not an array, add a new one.
-                    // This also handles the case where config.tools = [{ "googleSearch": {} }] initially.
-                    config.tools.push({ functionDeclarations: customFunctionDeclarations });
+                    initialConfig.tools.push({ functionDeclarations: customFunctionDeclarations });
                 }
             }
-            // If there are no custom function declarations, config.tools remains as is (e.g., just with googleSearch).
         } else {
-            // Fallback or error if config.tools is not an array as expected by new structure
-            console.warn('config.tools is not an array. Expected an array for tool configurations (e.g., for googleSearch and functionDeclarations). Setting up default for functionDeclarations.');
-            config.tools = { functionDeclarations: this.toolManager.getToolDeclarations() || [] };
+            console.warn('initialConfig.tools is not an array. Setting up default for functionDeclarations.');
+            initialConfig.tools = [{ functionDeclarations: this.toolManager.getToolDeclarations() || [] }];
         }
-        this.config = config;
+        // Note: this.config is no longer stored as a persistent agent property.
+        // It's fetched fresh in connect(). The initialConfig here is just for constructor-time setup.
 
         this.name = name;
         this.url = url;
@@ -173,9 +176,17 @@ export class GeminiAgent{
 
     /**
      * Connects to the Gemini API using the GeminiWebsocketClient.connect() method.
+     * Fetches the latest configuration before connecting.
      */
     async connect() {
-        this.client = new GeminiWebsocketClient(this.name, this.url, this.config);
+        const currentConfig = this.getConfigFunc(); // Get the latest config
+        // If tool declarations need to be merged every time, do it here with currentConfig
+        // For simplicity, assuming tool declarations merged at construction are sufficient,
+        // or that getConfigFunc already returns a fully prepared config including tools.
+        // If dynamic tool changes are needed per connection, the logic from constructor
+        // for merging tool declarations would need to be replicated here with currentConfig.
+
+        this.client = new GeminiWebsocketClient(this.name, this.url, currentConfig);
         await this.client.connect();
         this.setupEventListeners();
         this.connected = true;

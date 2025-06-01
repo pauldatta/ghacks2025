@@ -1,5 +1,6 @@
 import elements from './elements.js';
 import settingsManager from '../settings/settings-manager.js';
+import { getAppMode, isWhispererActive } from '../config/config.js'; // Import for app mode
 
 /**
  tore * Updates UI to show disconnect button and hide connect button
@@ -216,6 +217,68 @@ export function setupEventListeners(agent) {
     elements.micBtn.classList.toggle('inactive', !isMicActive);
     elements.listeningIndicator.classList.toggle('hidden', !isMicActive); // Hide listening indicator initially
 
+    setupAppModeToggle(agent); // Initialize the app mode toggle
+}
+
+/**
+ * Sets up the event listener and initial state for the app mode toggle.
+ * @param {GeminiAgent} agent - The main application agent instance
+ */
+function setupAppModeToggle(agent) {
+    if (!elements.whispererModeToggle || !elements.verbalCueHint || !elements.appModeStatus) {
+        console.warn('App mode toggle, verbal cue hint, or app mode status element not found.');
+        return;
+    }
+
+    const updateModeUI = (isWhisperer) => {
+        if (isWhisperer) {
+            elements.verbalCueHint.textContent = 'Hint: In Whisperer mode, use phrases like "Let me check...", "Let me see...", "What about...", "Would it help if..." for proactive help.';
+            elements.appModeStatus.textContent = 'Whisperer';
+        } else {
+            elements.verbalCueHint.textContent = 'Hint: In Live mode, all conversation will be responded to.';
+            elements.appModeStatus.textContent = 'Live';
+        }
+    };
+
+    // Set initial state of the toggle, hint, and status label
+    const initialModeIsWhisperer = isWhispererActive();
+    elements.whispererModeToggle.checked = initialModeIsWhisperer;
+    updateModeUI(initialModeIsWhisperer);
+
+    elements.whispererModeToggle.addEventListener('change', async (event) => {
+        const isChecked = event.target.checked; // true for Whisperer, false for Live
+        const newMode = isChecked ? 'whisperer' : 'live';
+        localStorage.setItem('appMode', newMode);
+        updateModeUI(isChecked);
+        console.log(`App mode changed to: ${newMode}. Reconnecting WebSocket...`);
+
+        try {
+            if (agent.connected) {
+                await agent.disconnect();
+                showConnectButton();
+                [elements.cameraBtn, elements.screenBtn, elements.micBtn].forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                });
+                elements.listeningIndicator.classList.add('hidden');
+                isCameraActive = false;
+                isMicActive = false;
+            }
+
+            await agent.connect();
+            showDisconnectButton();
+
+        } catch (error) {
+            console.error('Error during WebSocket reconnection for app mode toggle:', error);
+            showConnectButton();
+            alert(`Failed to reconnect for app mode change. Please check your settings. Error: ${error.message}`);
+            // Revert UI and localStorage if connection fails
+            const previousModeIsWhisperer = !isChecked; // The mode it was before the failed attempt
+            localStorage.setItem('appMode', previousModeIsWhisperer ? 'whisperer' : 'live');
+            elements.whispererModeToggle.checked = previousModeIsWhisperer;
+            updateModeUI(previousModeIsWhisperer);
+        }
+    });
 }
 
 // Initialize settings
