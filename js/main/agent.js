@@ -9,8 +9,6 @@ import { AudioRecorder } from '../audio/recorder.js';
 import { AudioStreamer } from '../audio/streamer.js';
 import { AudioVisualizer } from '../audio/visualizer.js';
 
-import { DeepgramTranscriber } from '../transcribe/deepgram.js';
-
 import { CameraManager } from '../camera/camera.js';
 import { ScreenManager } from '../screen/screen.js';
 
@@ -19,7 +17,6 @@ export class GeminiAgent{
         name = 'GeminiAgent',
         url,
         getConfigFunc, // Changed from static config to a function
-        deepgramApiKey = null,
         transcribeModelsSpeech = true,
         transcribeUsersSpeech = false,
         modelSampleRate = 24000,
@@ -42,7 +39,6 @@ export class GeminiAgent{
         // For transcribers
         this.transcribeModelsSpeech = transcribeModelsSpeech;
         this.transcribeUsersSpeech = transcribeUsersSpeech;
-        this.deepgramApiKey = deepgramApiKey;
         this.modelSampleRate = modelSampleRate;
 
         // Initialize screen & camera settings
@@ -112,10 +108,6 @@ export class GeminiAgent{
                     this.audioStreamer.initialize();
                 }
                 this.audioStreamer.streamAudio(new Uint8Array(data));
-
-                if (this.modelTranscriber && this.modelTranscriber.isConnected) {
-                    this.modelTranscriber.sendAudio(data);
-                }
 
             } catch (error) {
                 throw new Error('Audio processing error:' + error);
@@ -311,26 +303,6 @@ export class GeminiAgent{
                 this.audioStreamer = null;
             }
 
-            // Cleanup model's speech transcriber
-            if (this.modelTranscriber) {
-                this.modelTranscriber.disconnect();
-                this.modelTranscriber = null;
-                if (this.modelsKeepAliveInterval) {
-                    clearInterval(this.modelsKeepAliveInterval);
-                    this.modelsKeepAliveInterval = null;
-                }
-            }
-
-            // Cleanup user's speech transcriber
-            if (this.userTranscriber) {
-                this.userTranscriber.disconnect();
-                this.userTranscriber = null;
-                if (this.userKeepAliveInterval) {
-                    clearInterval(this.userKeepAliveInterval);
-                    this.userKeepAliveInterval = null;
-                }
-            }
-
             // Finally close audio context
             if (this.audioContext) {
                 await this.audioContext.close();
@@ -350,93 +322,6 @@ export class GeminiAgent{
     }
 
     /**
-     * Initializes the model's speech transcriber with Deepgram
-     */
-    async initializeModelSpeechTranscriber() {
-        if (!this.modelTranscriber) {
-            console.warn('Either no Deepgram API key provided or model speech transcription disabled');
-            return;
-        }
-
-        console.info('Initializing Deepgram model speech transcriber...');
-        console.log('[DeepgramInit] About to create connectionPromise.');
-        // Promise to send keep-alive every 10 seconds once connected
-        const connectionPromise = new Promise((resolve, reject) => { // Added reject
-            this.modelTranscriber.on('connected', () => {
-                console.log('[DeepgramInit] "connected" event received.');
-                console.info('Model speech transcriber connection established, setting up keep-alive...');
-                this.modelsKeepAliveInterval = setInterval(() => {
-                    if (this.modelTranscriber.isConnected) {
-                        this.modelTranscriber.ws.send(JSON.stringify({ type: 'KeepAlive' }));
-                        console.info('Sent keep-alive message to model speech transcriber');
-                    }
-                }, 10000);
-                resolve();
-            });
-            // Add a timeout for the connection promise for debugging
-            setTimeout(() => {
-                reject(new Error('[DeepgramInit] Timeout waiting for "connected" event after connect() call.'));
-            }, 15000); // 15 second timeout
-        });
-        console.log('[DeepgramInit] connectionPromise created.');
-
-        // Just log transcription to console for now
-        this.modelTranscriber.on('transcription', (transcript) => {
-            this.emit('transcription', transcript);
-            console.debug('Model speech transcription:', transcript);
-        });
-
-        // Connect to Deepgram and execute promise
-        try {
-            console.log('[DeepgramInit] About to call this.modelTranscriber.connect().');
-            await this.modelTranscriber.connect();
-            console.log('[DeepgramInit] this.modelTranscriber.connect() completed.');
-            console.log('[DeepgramInit] About to await connectionPromise.');
-            await connectionPromise;
-            console.log('[DeepgramInit] connectionPromise resolved.');
-        } catch (error) {
-            console.error('[DeepgramInit] Error during modelTranscriber.connect() or connectionPromise:', error);
-            throw error; // Re-throw to be caught by initialize()'s main catch block
-        }
-    }
-
-    /**
-     * Initializes the user's speech transcriber with Deepgram
-     */
-    async initializeUserSpeechTranscriber() {
-        if (!this.userTranscriber) {
-            console.warn('Either no Deepgram API key provided or user speech transcription disabled');
-            return;
-        }
-
-        console.info('Initializing Deepgram user speech transcriber...');
-
-        // Promise to send keep-alive every 10 seconds once connected
-        const connectionPromise = new Promise((resolve) => {
-            this.userTranscriber.on('connected', () => {
-                console.info('User speech transcriber connection established, setting up keep-alive...');
-                this.userKeepAliveInterval = setInterval(() => {
-                    if (this.userTranscriber.isConnected) {
-                        this.userTranscriber.ws.send(JSON.stringify({ type: 'KeepAlive' }));
-                        console.info('Sent keep-alive message to user transcriber');
-                    }
-                }, 10000);
-                resolve();
-            });
-        });
-
-        // Handle user transcription events
-        this.userTranscriber.on('transcription', (transcript) => {
-            this.emit('user_transcription', transcript);
-            console.debug('User speech transcription:', transcript);
-        });
-
-        // Connect to Deepgram and execute promise
-        await this.userTranscriber.connect();
-        await connectionPromise;
-    }
-
-    /**
      * Initiates audio recording from the microphone.
      * Streams audio data to the model in real-time, handling interruptions
      */
@@ -453,19 +338,7 @@ export class GeminiAgent{
             this.visualizer.start();
             this.audioRecorder = new AudioRecorder();
             
-            // Initialize transcriber if API key is provided
-            if (this.deepgramApiKey) {
-                if (this.transcribeModelsSpeech) {
-                    this.modelTranscriber = new DeepgramTranscriber(this.deepgramApiKey, this.modelSampleRate);
-                    await this.initializeModelSpeechTranscriber();
-                }
-                if (this.transcribeUsersSpeech) {
-                    this.userTranscriber = new DeepgramTranscriber(this.deepgramApiKey, 16000);
-                    await this.initializeUserSpeechTranscriber();
-                }
-            } else {
-                console.warn('No Deepgram API key provided, transcription disabled');
-            }
+            console.warn('Deepgram transcription disabled');
             
             this.initialized = true;
             console.info(`${this.client.name} initialized successfully`);
@@ -481,9 +354,6 @@ export class GeminiAgent{
         await this.audioRecorder.start(async (audioData) => {
             try {
                 this.client.sendAudio(audioData);
-                if (this.userTranscriber && this.userTranscriber.isConnected) {
-                    this.userTranscriber.sendAudio(new Uint8Array(audioData));
-                }
             } catch (error) {
                 console.error('Error sending audio data:', error);
                 this.audioRecorder.stop();

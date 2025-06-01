@@ -82,7 +82,6 @@ const JS_FILE_ORDER = [
     'audio/visualizer.js',
     'camera/camera.js',
     'screen/screen.js',
-    'transcribe/deepgram.js', // Uses global EventEmitter
     'ws/client.js',           // Uses global EventEmitter and utils.js
     'main/agent.js',
     'dom/events.js',

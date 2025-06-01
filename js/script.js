@@ -1,5 +1,5 @@
 import { GeminiAgent } from './main/agent.js';
-import { getConfig, getWebsocketUrl, getDeepgramApiKey, MODEL_SAMPLE_RATE } from './config/config.js';
+import { getConfig, getWebsocketUrl, MODEL_SAMPLE_RATE } from './config/config.js';
 
 import { GoogleSearchTool } from './tools/google-search.js'; // Keep import if other tools might be added later
 import { ToolManager } from './tools/tool-manager.js';
@@ -10,7 +10,6 @@ import elements from './dom/elements.js'; // Import elements for listening indic
 
 const url = getWebsocketUrl();
 // const config = getConfig(); // getConfig will now be called by the agent
-const deepgramApiKey = getDeepgramApiKey();
 
 const toolManager = new ToolManager();
 // toolManager.registerTool('googleSearch', new GoogleSearchTool()); // Commented out to prioritize server-side Google Search
@@ -20,7 +19,6 @@ const chatManager = new ChatManager();
 const geminiAgent = new GeminiAgent({
     url,
     getConfigFunc: getConfig, // Pass the getConfig function itself
-    deepgramApiKey,
     modelSampleRate: MODEL_SAMPLE_RATE,
     toolManager,
     chatManager // Pass chatManager instance
