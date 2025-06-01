@@ -14,6 +14,16 @@ export class ChatManager {
         if (!this.geminiOutputArea) {
             console.error("Gemini output area #geminiOutputArea not found!");
         }
+
+        // Configure marked.js to handle line breaks like GitHub Flavored Markdown
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                breaks: true, // Convert single newlines in markdown to <br>
+                gfm: true       // Enable GitHub Flavored Markdown
+            });
+        } else {
+            console.warn('marked.js is not loaded. Markdown rendering will be basic.');
+        }
     }
 
     _escapeHtml(unsafe) {
@@ -125,22 +135,19 @@ export class ChatManager {
         }
         this.currentStreamingTranscript += text;
 
-        let displayHtml = this.currentStreamingTranscript;
-        const codeBlocks = [];
-        displayHtml = displayHtml.replace(/`(.*?)`/g, (match, codeContent) => {
-            codeBlocks.push(this._escapeHtml(codeContent));
-            return `___CODEBLOCK_${codeBlocks.length - 1}___`;
-        });
-        displayHtml = displayHtml.replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>');
-        displayHtml = displayHtml.replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)|(?<!_)_(?!_)(.*?)(?<!_)_(?!_)/g, '<em>$1$2</em>');
-        displayHtml = displayHtml.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-        displayHtml = displayHtml.replace(/\n/g, '<br>');
-        displayHtml = displayHtml.replace(/___CODEBLOCK_(\d+)___/g, (match, index) => {
-            return `<code>${codeBlocks[parseInt(index)]}</code>`;
-        });
-        
-        // Add streaming indicator
-        this.geminiOutputArea.innerHTML = displayHtml + '<span class="streaming-indicator">▋</span>'; 
+        if (typeof marked === 'undefined') {
+            console.error('marked.js is not loaded. Displaying raw text.');
+            // Fallback to simple text display, escaping HTML to be safe if setting innerHTML.
+            // Or use innerText for maximum safety if no HTML is intended.
+            this.geminiOutputArea.innerText = this.currentStreamingTranscript; 
+            // Consider adding indicator back if using innerHTML and styling allows
+        } else {
+            // Use marked.parse for rendering.
+            // marked.js handles HTML escaping for markdown syntax by default.
+            // The 'breaks: true' option set in constructor handles newlines.
+            let parsedHtml = marked.parse(this.currentStreamingTranscript);
+            this.geminiOutputArea.innerHTML = parsedHtml + '<span class="streaming-indicator">▋</span>';
+        }
     }
 
     finalizeStreamingMessage() {
