@@ -218,6 +218,54 @@ export function setupEventListeners(agent) {
     elements.listeningIndicator.classList.toggle('hidden', !isMicActive); // Hide listening indicator initially
 
     setupAppModeToggle(agent); // Initialize the app mode toggle
+
+    // Copy Text button click
+    if (elements.copyTextBtn && elements.geminiOutputArea) {
+        elements.copyTextBtn.addEventListener('click', async () => {
+            const textToCopy = elements.geminiOutputArea.innerText;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                // Optional: Provide user feedback (e.g., change button text temporarily)
+                const originalText = elements.copyTextBtn.textContent;
+                elements.copyTextBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    elements.copyTextBtn.textContent = originalText;
+                }, 1500);
+                console.log('Text copied to clipboard');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy text. See console for details.');
+            }
+        });
+    } else {
+        console.warn('Copy Text button or Gemini output area not found.');
+    }
+
+    // Copy Markdown button click
+    if (elements.copyMarkdownBtn && elements.geminiOutputArea && agent && agent.chatManager) {
+        elements.copyMarkdownBtn.addEventListener('click', async () => {
+            const markdownToCopy = agent.chatManager.lastFinalizedMarkdown || elements.geminiOutputArea.innerHTML; // Fallback to innerHTML if raw markdown isn't available
+            if (!markdownToCopy && agent.chatManager.lastFinalizedMarkdown === '') {
+                alert('No Markdown content available to copy.');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(markdownToCopy);
+                // Optional: Provide user feedback
+                const originalText = elements.copyMarkdownBtn.textContent;
+                elements.copyMarkdownBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    elements.copyMarkdownBtn.textContent = originalText;
+                }, 1500);
+                console.log('Markdown (or HTML) copied to clipboard');
+            } catch (err) {
+                console.error('Failed to copy Markdown: ', err);
+                alert('Failed to copy Markdown. See console for details.');
+            }
+        });
+    } else {
+        console.warn('Copy Markdown button or Gemini output area not found.');
+    }
 }
 
 /**

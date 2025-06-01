@@ -6,6 +6,7 @@ export class ChatManager {
         this.geminiOutputArea = document.getElementById('geminiOutputArea'); // New element for streaming output
         
         this.currentStreamingTranscript = ''; // For the live output area
+        this.lastFinalizedMarkdown = ''; // To store the last complete raw markdown
         this.lastUserMessageType = null; // 'text' or 'audio'
         
         if (!this.chatHistoryContainer) {
@@ -174,6 +175,10 @@ export class ChatManager {
         
         // Do NOT clear geminiOutputArea here. It persists until a new stream starts.
         
+        if (finalTranscript && !isEffectivelySilent) {
+            this.lastFinalizedMarkdown = finalTranscript; // Store the raw markdown
+        }
+
         this.currentStreamingTranscript = ''; // Crucial: reset for the next stream.
         this.lastUserMessageType = null; 
     }
@@ -187,6 +192,7 @@ export class ChatManager {
         if (this.chatHistoryContainer) this.chatHistoryContainer.innerHTML = '';
         if (this.geminiOutputArea) this.geminiOutputArea.innerHTML = '';
         this.currentStreamingTranscript = '';
+        this.lastFinalizedMarkdown = ''; // Clear stored markdown
         this.lastUserMessageType = null;
     }
 }

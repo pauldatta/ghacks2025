@@ -38,7 +38,14 @@ const elements = {
     appModeStatus: document.getElementById('appModeStatus'), // Span to show current mode
 
     // Verbal Cue Hint
-    verbalCueHint: document.getElementById('verbalCueHint')
+    verbalCueHint: document.getElementById('verbalCueHint'),
+
+    // Output Area
+    geminiOutputArea: document.getElementById('geminiOutputArea'),
+
+    // Copy Buttons
+    copyTextBtn: document.getElementById('copyTextBtn'),
+    copyMarkdownBtn: document.getElementById('copyMarkdownBtn')
 };
 
 export default elements;
